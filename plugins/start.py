@@ -10,7 +10,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 
 from bot import Bot
-from config import ADMINS, CHANNEL_ID, FORCE_MSG, FORCE_SUB_CHANNEL, FORCE_SUB_CHANNEL2, OWNER_TAG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, OWNER_ID, SHORTLINK_API_URL, SHORTLINK_API_KEY, USE_PAYMENT, USE_SHORTLINK, VERIFY_EXPIRE, TIME, TUT_VID, U_S_E_P
+from config import ADMINS, CHANNEL_ID, FORCE_MSG, FORCE_SUB_CHANNEL, FORCE_SUB_CHANNEL2, OWNER_TAG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, OWNER_ID, SHORTLINK_URL, SHORTLINK_API, USE_PAYMENT, USE_SHORTLINK, VERIFY_EXPIRE, TIME, TUT_VID, U_S_E_P, REQUEST1, REQUEST2, PHOTO_URL, LOG_CHANNEL
 from helper_func import encode, get_readable_time, increasepremtime, subscribed, subscribed2, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import add_admin, add_user, del_admin, del_user, full_adminbase, full_userbase, gen_new_count, get_clicks, inc_count, new_link, present_admin, present_hash, present_user
 
@@ -18,6 +18,7 @@ WAIT_MSG = """"<b>Processing ...</b>"""
 REPLY_ERROR = """<blockquote><b>Use this command as a reply to any telegram message without any spaces.</b></blockquote>"""
 SECONDS = TIME 
 TUT_VID = f"{TUT_VID}"
+
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed & subscribed2)
 async def start_command(client: Client, message: Message):
@@ -193,15 +194,12 @@ async def start_command(client: Client, message: Message):
                             pass
                     clicks = await get_clicks(newbase64_string)
                     newLink = f"https://t.me/{client.username}?start={newbase64_string}"
-                    link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY,f'{newLink}')
-                
-                    await client.send_message(
-            Config.LOG_CHANNEL, f"""<b>#NEW_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})
+                    link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'{newLink}')            
+                    
+                    await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>#NEW_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})
 User: @{message.from_user.username} • {message.from_user.id}
-            
-New Link: {newLink}
-            
-Shorten Link: {link}</b>""")
+
+New Link: {newLink}</b>""")
                 
                     if USE_PAYMENT:
                         btn = [
@@ -247,6 +245,7 @@ Shorten Link: {link}</b>""")
             quote=True
         )
         return
+import *        
     if USE_SHORTLINK and (not U_S_E_P): 
         if id in ADMINS:
             return
@@ -254,16 +253,13 @@ Shorten Link: {link}</b>""")
         if not verify_status['is_verified']:
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
             await update_verify_status(id, verify_token=token, link="")
-            link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY,f'https://telegram.dog/{client.username}?start=verify_{token}')
-
-            await client.send_message(
-            Config.LOG_CHANNEL, f"""<b>#VERIFICATION_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})
+            link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://t.me/{client.username}?start=verify_{token}')
+            
+            await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>#VERIFICATION_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})
 User: @{message.from_user.username} • {message.from_user.id}
-            
 Verification Link: {token}
-            
 Shorten Link: {link}</b>""")
-                        
+                    
             if USE_PAYMENT:
                 btn = [
                 [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
@@ -275,20 +271,72 @@ Shorten Link: {link}</b>""")
                 [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
                 [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                 ]
-            await message.reply_photo(photo=Config.PHOTO_URL, caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+            await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
             return
     return
 
 
-    
-#=====================================================================================#
 
-WAIT_MSG = """<b>Processing ...</b>"""
+@app.on_message(filters.command('start') & filters.private)
+async def not_joined(client: Client, message):
+    try:
+        # Initialize buttons list
+        buttons = []
 
-REPLY_ERROR = """<code>Use this command as a replay to any telegram message without any spaces.</code>"""
+        # Add buttons based on configuration
+        if FORCE_SUB_CHANNEL > 0:
+            if hasattr(client, 'invitelink') and client.invitelink:
+                buttons.append([InlineKeyboardButton("Join", url=client.invitelink)])
+        if FORCE_SUB_CHANNEL2 > 0:
+            if hasattr(client, 'invitelink2') and client.invitelink2:
+                buttons.append([InlineKeyboardButton("Join", url=client.invitelink2)])
+        if REQUEST1 and REQUEST1 != "0":  # Check if REQUEST1 is valid
+            buttons.append([InlineKeyboardButton("Join", url=REQUEST1)])
+        if REQUEST2 and REQUEST2 != "0":  # Check if REQUEST2 is valid
+            buttons.append([InlineKeyboardButton("Join", url=REQUEST2)])
 
-#=====================================================================================#
+        # Add "Try Again" button with error handling for missing command arguments
+        start_param = message.command[1] if len(message.command) > 1 else ''
+        buttons.append([
+            InlineKeyboardButton(
+                text='Try Again',
+                url=f"https://t.me/{client.username}?start={start_param}"
+            )
+        ])
 
+        # Send the message with inline keyboard
+#        await message.reply_text(
+#            text="Please join the channels below:",
+#            reply_markup=InlineKeyboardMarkup(buttons)
+#        )
+        
+        await message.reply(
+            text=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name,
+            username=None if not message.from_user.username else '@' + message.from_user.username,
+            mention=message.from_user.mention,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons),
+        quote=True,
+        disable_web_page_preview=True
+    )
+
+    except Exception as e:
+        error_message = f"An error occurred: {str(e)}"
+        if LOG_CHANNEL:
+            try:
+                # Send error message to the log channel
+                await client.send_message(LOG_CHANNEL, error_message)
+            except Exception as log_error:
+                # If sending to the log channel fails, print the error
+                print(f"Failed to send error message to log channel: {str(log_error)}")
+        # Optionally, print the error to console
+        print(error_message)
+
+
+'''
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     if FORCE_SUB_CHANNEL & FORCE_SUB_CHANNEL2:
@@ -333,12 +381,12 @@ async def not_joined(client: Client, message: Message):
         quote=True,
         disable_web_page_preview=True
     )
-
+'''
 
 @Bot.on_message(filters.command('ch2l') & filters.private)
 async def gen_link_encoded(client: Bot, message: Message):
     try:
-        hash = await client.ask(text="Enter the code here... \n /cancel to cancel the operation",chat_id = message.from_user.id, timeout=60)
+        hash = await client.ask(text="<blockquote><b>Enter the code here...\nHit /cancel to cancel the operation</b></blockquote>",chat_id = message.from_user.id, quote=True, timeout=60)
     except Exception as e:
         print(e)
         await hash.reply(f"😔 some error occurred {e}")
@@ -347,8 +395,8 @@ async def gen_link_encoded(client: Bot, message: Message):
         await hash.reply("Cancelled 😉!")
         return
     link = f"https://t.me/{client.username}?start={hash.text}"
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎉 Click Here ", url=link)]])
-    await hash.reply_text(f"<b>🧑‍💻 Here is your generated link", quote=True, reply_markup=reply_markup)
+    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Hash Link", url=link)]])
+    await hash.reply_text(f"<b>Here is your generated link\n\n{link}</b>", quote=True, reply_markup=reply_markup)
     return
         
 
@@ -404,16 +452,6 @@ async def send_text(client: Bot, message: Message):
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
-    return
-
-@Bot.on_message(filters.command('auth') & filters.private)
-async def auth_command(client: Bot, message: Message):
-    await client.send_message(
-        chat_id=OWNER_ID,
-        text=f"Message for @{OWNER_TAG}\n<code>{message.from_user.id}</code>\n/add_admin <code>{message.from_user.id}</code> 🤫",
-    )
-
-    await message.reply("Please wait for verification from the owner. 🫣")
     return
 
 
