@@ -14,6 +14,8 @@ from config import ADMINS, CHANNEL_ID, FORCE_MSG, FORCE_SUB_CHANNEL, FORCE_SUB_C
 from helper_func import encode, get_readable_time, increasepremtime, subscribed, subscribed2, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import add_admin, add_user, del_admin, del_user, full_adminbase, full_userbase, gen_new_count, get_clicks, inc_count, new_link, present_admin, present_hash, present_user
 
+WAIT_MSG = """"<b>Processing ...</b>"""
+REPLY_ERROR = """<blockquote><b>Use this command as a reply to any telegram message without any spaces.</b></blockquote>"""
 SECONDS = TIME 
 TUT_VID = f"{TUT_VID}"
 
@@ -35,11 +37,11 @@ async def start_command(client: Client, message: Message):
             if "verify_" in message.text:
                 _, token = message.text.split("_", 1)
                 if verify_status['verify_token'] != token:
-                    return await message.reply("Your token is invalid or Expired ⌛. Try again by clicking /start")
+                    return await message.reply("<blockquote><b>🔴 Your token verification is invalid or Expired, Hit /start command and try again.<b></blockquote>")
                 await update_verify_status(id, is_verified=True, verified_time=time.time())
                 if verify_status["link"] == "":
                     reply_markup = None
-                await message.reply(f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ⏳", reply_markup=reply_markup, protect_content=False, quote=True)
+                await message.reply(f"<blockquote><b>Your token verification was successful\n\nNow you can access all files for 24-hrs...</b></blockquote>", reply_markup=reply_markup, protect_content=False, quote=True)
     if len(message.text) > 7:
         for i in range(1):
             if USE_SHORTLINK and (not U_S_E_P):
@@ -110,14 +112,14 @@ async def start_command(client: Client, message: Message):
                         pass
                 if (SECONDS == 0):
                     return
-                notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
+                notification_msg = await message.reply(f"<blockquote><b><blockquote><b>🔴 This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b></blockquote>.")
                 await asyncio.sleep(SECONDS)    
                 for snt_msg in snt_msgs:    
                     try:    
                         await snt_msg.delete()  
                     except: 
                         pass    
-                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
+                await notification_msg.edit(f"<blockquote><b>Your file has been successfully deleted! 😼</b></blockquote>")  
                 return
             if (U_S_E_P):
                 if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
@@ -173,14 +175,14 @@ async def start_command(client: Client, message: Message):
                 if snt_msgs:
                     if (SECONDS == 0):
                         return
-                    notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
+                    notification_msg = await message.reply(f"<blockquote><b>🔴 This file will be  deleted in  {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b></blockquote>")
                     await asyncio.sleep(SECONDS)    
                     for snt_msg in snt_msgs:    
                         try:    
                             await snt_msg.delete()  
                         except: 
                             pass    
-                    await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
+                    await notification_msg.edit("<blockquote><b>Your file has been successfully deleted! 😼</b></blockquote>")  
                     return
             except:
                     newbase64_string = await encode(f"sav-ory-{_string}")
@@ -192,20 +194,29 @@ async def start_command(client: Client, message: Message):
                     clicks = await get_clicks(newbase64_string)
                     newLink = f"https://t.me/{client.username}?start={newbase64_string}"
                     link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY,f'{newLink}')
+                
+                    await client.send_message(
+            Config.LOG_CHANNEL, f"""<b>#NEW_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})
+User: @{message.from_user.username} • {message.from_user.id}
+            
+New Link: {newLink}
+            
+Shorten Link: {link}</b>""")
+                
                     if USE_PAYMENT:
                         btn = [
-                        [InlineKeyboardButton("Click Here 👆", url=link),
-                        InlineKeyboardButton('How to open this link 👆', url=TUT_VID)],
+                        [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                        [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)],
                         [InlineKeyboardButton("Buy Premium plan", callback_data="buy_prem")]
                         ]
                     else:
                         btn = [
-                        [InlineKeyboardButton("Click Here 👆", url=link)],
-                        [InlineKeyboardButton('How to open this link 👆', url=TUT_VID)]
+                        [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                        [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                         ]
-                    await message.reply(f"Total clicks {clicks}. Here is your link 👇.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                    await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>Total clicks: {clicks}. Here is your link </b></blockquote>.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
                     return
-    
+
     for i in range(1):
         if USE_SHORTLINK and (not U_S_E_P):
             if USE_SHORTLINK : 
@@ -218,8 +229,8 @@ async def start_command(client: Client, message: Message):
         reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("😊 About Me", callback_data="about"),
-                    InlineKeyboardButton("🔒 Close", callback_data="close")
+                    InlineKeyboardButton("☎️ Contact Developer", callback_data="about"),
+                    InlineKeyboardButton("📴 Close", callback_data="close")
                 ]
             ]
         )
@@ -244,18 +255,27 @@ async def start_command(client: Client, message: Message):
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
             await update_verify_status(id, verify_token=token, link="")
             link = await get_shortlink(SHORTLINK_API_URL, SHORTLINK_API_KEY,f'https://telegram.dog/{client.username}?start=verify_{token}')
+
+            await client.send_message(
+            Config.LOG_CHANNEL, f"""<b>#VERIFICATION_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})
+User: @{message.from_user.username} • {message.from_user.id}
+            
+Verification Link: {token}
+            
+Shorten Link: {link}</b>""")
+                        
             if USE_PAYMENT:
                 btn = [
-                [InlineKeyboardButton("Click Here 👆", url=link),
-                InlineKeyboardButton('How to open this link 👆', url=TUT_VID)],
-                [InlineKeyboardButton("Buy Premium plan", callback_data="buy_prem")]
+                [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)],
+                [InlineKeyboardButton("Premium Membership", callback_data="buy_prem")]
                 ]
             else:
                 btn = [
-                [InlineKeyboardButton("Click Here 👆", url=link)],
-                [InlineKeyboardButton('How to open this link 👆', url=TUT_VID)]
+                [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                 ]
-            await message.reply(f"Your Ads token is expired, refresh your token and try again. \n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for {get_exp_time(VERIFY_EXPIRE)} after passing the ad", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+            await message.reply_photo(photo=Config.PHOTO_URL, caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
             return
     return
 
@@ -274,27 +294,26 @@ async def not_joined(client: Client, message: Message):
     if FORCE_SUB_CHANNEL & FORCE_SUB_CHANNEL2:
         buttons = [
         [
-            InlineKeyboardButton(
-                "Join Channel 👆",
-                url=client.invitelink),
-            InlineKeyboardButton(
-                "Join Channel 👆",
-                url=client.invitelink2),
+            InlineKeyboardButton("Join", url=client.invitelink),
+            InlineKeyboardButton("Join", url=REQUEST1),
+            InlineKeyboardButton("Join", url=client.invitelink2),
+            InlineKeyboardButton("Join", url=REQUEST2),
+            
         ]
     ]
     elif FORCE_SUB_CHANNEL:
         buttons = [
             [
-                InlineKeyboardButton(
-                    "Join Channel 👆",
-                    url=client.invitelink)
+                InlineKeyboardButton("Join", url=REQUEST1),
+                InlineKeyboardButton("Join", url=client.invitelink1),
+                InlineKeyboardButton("Join", url=REQUEST2),
             ]
-        ]
+        ]    
     try:
         buttons.append(
             [
                 InlineKeyboardButton(
-                    text='Try Again 🥺',
+                    text='Try Again',
                     url=f"https://t.me/{client.username}?start={message.command[1]}"
                 )
             ]
