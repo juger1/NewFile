@@ -1,7 +1,7 @@
 from bot import Bot
 from pyrogram.types import Message
 from pyrogram import filters
-from config import ADMINS, BOT_STATS_TEXT, USER_REPLY_TEXT
+from config import ADMINS
 from datetime import datetime
 from helper_func import get_readable_time
 
@@ -20,3 +20,6 @@ async def useless(_, message: Message):
     if USER_REPLY_TEXT:
         await message.reply(USER_REPLY_TEXT)
 
+
+BOT_STATS_TEXT = "<b>BOT UPTIME: {uptime}</b>"
+USER_REPLY_TEXT = "<blockquote><b>Don't send me messages directly I'm only File Share bot!\n Contact Bot Developer: @StupidBoi69</b></blockquote>"
