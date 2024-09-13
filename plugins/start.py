@@ -245,7 +245,7 @@ New Link: {newLink}</b>""")
             quote=True
         )
         return
-import *        
+
     if USE_SHORTLINK and (not U_S_E_P): 
         if id in ADMINS:
             return
