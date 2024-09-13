@@ -276,8 +276,7 @@ Shorten Link: {link}</b>""")
     return
 
 
-
-@app.on_message(filters.command('start') & filters.private)
+@Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message):
     try:
         # Initialize buttons list
