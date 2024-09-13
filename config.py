@@ -14,7 +14,7 @@ DISABLE_CHANNEL_BUTTON = True if os.environ.get("DISABLE_CHANNEL_BUTTON", "TRUE"
 USE_SHORTLINK = True if os.environ.get('USE_SHORTLINK', "TRUE") == "TRUE" else False 
 USE_PAYMENT = True if (True if os.environ.get("USE_PAYMENT", "TRUE") == "TRUE" else False) and USE_SHORTLINK else False
 
-PHOTO_URL = os environ.get("PHOTO_URL","https://graph.org/file/fd1487021734ee86c78b4.jpg")
+PHOTO_URL = os.environ.get("PHOTO_URL", "https://graph.org/file/fd1487021734ee86c78b4.jpg")
 
 
 # Read configuration from environment variables
