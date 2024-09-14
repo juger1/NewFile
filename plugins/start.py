@@ -212,7 +212,7 @@ New Link: {newLink}</b>""")
                         [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
                         [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                         ]
-                    await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>Total clicks: {clicks}. Here is your link </b></blockquote>.", reply_markup=InlineKeyboardMarkup(btn), quote=True)
+                    await message.reply_photo(photo=random.choice(PHOTO_URL), caption=f"<blockquote><b>Total clicks: {clicks}. Here is your link </b></blockquote>.", reply_markup=InlineKeyboardMarkup(btn), quote=True)
                     return
 
     for i in range(1):
@@ -233,7 +233,7 @@ New Link: {newLink}</b>""")
             ]
         )
         await message.reply_photo(
-            photo=PHOTO_URL,
+            photo=random.choice(PHOTO_URL),
             caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name,
@@ -271,7 +271,7 @@ Shorten Link: {link}</b>""")
                 [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
                 [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                 ]
-            await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), quote=True)
+            await message.reply_photo(photo=random.choice(PHOTO_URL), caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), quote=True)
             return
     return
 
@@ -306,7 +306,7 @@ async def not_joined(client: Client, message: Message):
 
     # Send the reply with the formatted message and buttons
     await message.reply_photo(
-        photo=PHOTO_URL,
+        photo=random.choice(PHOTO_URL),
         caption=FORCE_MSG.format(
             first=message.from_user.first_name,
             last=message.from_user.last_name,
