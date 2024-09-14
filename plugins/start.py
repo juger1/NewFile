@@ -212,7 +212,7 @@ New Link: {newLink}</b>""")
                         [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
                         [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                         ]
-                    await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>Total clicks: {clicks}. Here is your link </b></blockquote>.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                    await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>Total clicks: {clicks}. Here is your link </b></blockquote>.", reply_markup=InlineKeyboardMarkup(btn), quote=True)
                     return
 
     for i in range(1):
@@ -271,18 +271,16 @@ Shorten Link: {link}</b>""")
                 [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
                 [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                 ]
-            await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+            await message.reply_photo(photo=PHOTO_URL, caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), quote=True)
             return
     return
 
 
-
 @Bot.on_message(filters.command('start') & filters.private)
-async def not_joined(client: Client, message: Message):    
+async def not_joined(client: Client, message: Message):
     buttons = []
     row_buttons = []
-    buttons.append(row_buttons)
-    
+
     # Add buttons for the first row
     if FORCE_SUB_CHANNEL and int(FORCE_SUB_CHANNEL) != 0:
         row_buttons.append(InlineKeyboardButton("Join 1", url=client.invitelink))
@@ -295,13 +293,17 @@ async def not_joined(client: Client, message: Message):
 
     if REQUEST2 and REQUEST2.strip():
         row_buttons.append(InlineKeyboardButton("Join 4", url=REQUEST2))
-
+    
+    # Add the first row of buttons
+    if row_buttons:
+        buttons.append(row_buttons)
+    
     # Add retry button to a new row if applicable
     try:
         buttons.append([InlineKeyboardButton(text="🔃 Try Again", url=f"https://t.me/{client.username}?start={message.command[1]}")])
     except IndexError:
         pass
-        
+
     # Send the reply with the formatted message and buttons
     await message.reply_photo(
         photo=PHOTO_URL,
