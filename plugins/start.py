@@ -232,8 +232,9 @@ New Link: {newLink}</b>""")
                 ]
             ]
         )
-        await message.reply_text(
-            text=START_MSG.format(
+        await message.reply_photo(
+            photo=PHOTO_URL,
+            caption=START_MSG.format(
                 first=message.from_user.first_name,
                 last=message.from_user.last_name,
                 username=None if not message.from_user.username else '@' + message.from_user.username,
@@ -278,7 +279,7 @@ Shorten Link: {link}</b>""")
 
 
 @Bot.on_message(filters.command('start') & filters.private)
-async def not_joined(client: Client, message):
+async def not_joined(client: Client, message: Message):    
     buttons = []
     row_buttons = []
     buttons.append(row_buttons)
@@ -303,8 +304,9 @@ async def not_joined(client: Client, message):
         pass
         
     # Send the reply with the formatted message and buttons
-    await message.reply(
-        text=FORCE_MSG.format(
+    await message.reply_photo(
+        photo=PHOTO_URL,
+        caption=FORCE_MSG.format(
             first=message.from_user.first_name,
             last=message.from_user.last_name,
             username=None if not message.from_user.username else '@' + message.from_user.username,
@@ -317,7 +319,7 @@ async def not_joined(client: Client, message):
     )
 
 
-@Bot.on_message(filters.command('ch2l', 'hashlink', 'hl') & filters.private)
+@Bot.on_message(filters.command('ch2l') & filters.private)
 async def gen_link_encoded(client: Bot, message: Message):
     try:
         hash = await client.ask(text="Enter the code here\nHit /cancel to cancel the operation", chat_id = message.from_user.id, timeout=60)
