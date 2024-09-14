@@ -25,6 +25,10 @@ REQUEST2 = os.environ.get("REQUEST2", "")
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1001878910741"))
 FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "0"))
 
+# URLs are strings, so you may want to strip them in your main code
+REQUEST1 = os.getenv("REQUEST1", "https://t.me/+4_XXp0Yxets4YTY9").strip() 
+REQUEST2 = os.getenv("REQUEST2", "").strip() 
+
 
 # Bot token, API ID, and hash
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7453211392:AAGU0HOcv7lbPmIf1E4WKXiCyycMNoZnPro") 
@@ -64,7 +68,7 @@ FORCE_MSG = os.environ.get("FORCE_MSG", "Hello {first}\n\n<b>You need to join in
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
 # Admins
-ADMINS = os.environ.get("ADMINS", "").split()
+ADMINS = os.environ.get("ADMINS", "1895952308").split()
 ADMINS.append(OWNER_ID)
 
 # Logging configuration
