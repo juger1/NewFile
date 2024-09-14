@@ -276,98 +276,33 @@ Shorten Link: {link}</b>""")
     return
 
 
+
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message):
+    buttons = []
+    row_buttons = []
+    buttons.append(row_buttons)
+    
+    # Add buttons for the first row
+    if FORCE_SUB_CHANNEL and int(FORCE_SUB_CHANNEL) != 0:
+        row_buttons.append(InlineKeyboardButton("Join 1", url=client.invitelink))
+
+    if REQUEST1 and REQUEST1.strip():
+        row_buttons.append(InlineKeyboardButton("Join 2", url=REQUEST1))
+    
+    if FORCE_SUB_CHANNEL2 and int(FORCE_SUB_CHANNEL2) != 0:
+        row_buttons.append(InlineKeyboardButton("Join 3", url=client.invitelink2))
+
+    if REQUEST2 and REQUEST2.strip():
+        row_buttons.append(InlineKeyboardButton("Join 4", url=REQUEST2))
+
+    # Add retry button to a new row if applicable
     try:
-        # Initialize buttons list
-        buttons = []
-
-        # Add buttons based on configuration
-        if FORCE_SUB_CHANNEL > 0:
-            if hasattr(client, 'invitelink') and client.invitelink:
-                buttons.append([InlineKeyboardButton("Join", url=client.invitelink)])
-        if FORCE_SUB_CHANNEL2 > 0:
-            if hasattr(client, 'invitelink2') and client.invitelink2:
-                buttons.append([InlineKeyboardButton("Join", url=client.invitelink2)])
-        if REQUEST1 and REQUEST1 != "0":  # Check if REQUEST1 is valid
-            buttons.append([InlineKeyboardButton("Join", url=REQUEST1)])
-        if REQUEST2 and REQUEST2 != "0":  # Check if REQUEST2 is valid
-            buttons.append([InlineKeyboardButton("Join", url=REQUEST2)])
-
-        # Add "Try Again" button with error handling for missing command arguments
-        start_param = message.command[1] if len(message.command) > 1 else ''
-        buttons.append([
-            InlineKeyboardButton(
-                text='Try Again',
-                url=f"https://t.me/{client.username}?start={start_param}"
-            )
-        ])
-
-        # Send the message with inline keyboard
-#        await message.reply_text(
-#            text="Please join the channels below:",
-#            reply_markup=InlineKeyboardMarkup(buttons)
-#        )
-        
-        await message.reply(
-            text=FORCE_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else '@' + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=InlineKeyboardMarkup(buttons),
-        quote=True,
-        disable_web_page_preview=True
-    )
-
-    except Exception as e:
-        error_message = f"An error occurred: {str(e)}"
-        if LOG_CHANNEL:
-            try:
-                # Send error message to the log channel
-                await client.send_message(LOG_CHANNEL, error_message)
-            except Exception as log_error:
-                # If sending to the log channel fails, print the error
-                print(f"Failed to send error message to log channel: {str(log_error)}")
-        # Optionally, print the error to console
-        print(error_message)
-
-
-'''
-@Bot.on_message(filters.command('start') & filters.private)
-async def not_joined(client: Client, message: Message):
-    if FORCE_SUB_CHANNEL & FORCE_SUB_CHANNEL2:
-        buttons = [
-        [
-            InlineKeyboardButton("Join", url=client.invitelink),
-            InlineKeyboardButton("Join", url=REQUEST1),
-            InlineKeyboardButton("Join", url=client.invitelink2),
-            InlineKeyboardButton("Join", url=REQUEST2),
-            
-        ]
-    ]
-    elif FORCE_SUB_CHANNEL:
-        buttons = [
-            [
-                InlineKeyboardButton("Join", url=REQUEST1),
-                InlineKeyboardButton("Join", url=client.invitelink1),
-                InlineKeyboardButton("Join", url=REQUEST2),
-            ]
-        ]    
-    try:
-        buttons.append(
-            [
-                InlineKeyboardButton(
-                    text='Try Again',
-                    url=f"https://t.me/{client.username}?start={message.command[1]}"
-                )
-            ]
-        )
+        buttons.append([InlineKeyboardButton(text="🔃 Try Again", url=f"https://t.me/{client.username}?start={message.command[1]}")])
     except IndexError:
         pass
-
+        
+    # Send the reply with the formatted message and buttons
     await message.reply(
         text=FORCE_MSG.format(
             first=message.from_user.first_name,
@@ -380,7 +315,7 @@ async def not_joined(client: Client, message: Message):
         quote=True,
         disable_web_page_preview=True
     )
-'''
+
 
 @Bot.on_message(filters.command('ch2l') & filters.private)
 async def gen_link_encoded(client: Bot, message: Message):
