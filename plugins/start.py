@@ -317,10 +317,10 @@ async def not_joined(client: Client, message):
     )
 
 
-@Bot.on_message(filters.command('ch2l') & filters.private)
+@Bot.on_message(filters.command('ch2l', 'hashlink', 'hl') & filters.private)
 async def gen_link_encoded(client: Bot, message: Message):
     try:
-        hash = await client.ask(text="<blockquote><b>Enter the code here...\nHit /cancel to cancel the operation</b></blockquote>",chat_id = message.from_user.id, quote=True, timeout=60)
+        hash = await client.ask(text="Enter the code here\nHit /cancel to cancel the operation", chat_id = message.from_user.id, timeout=60)
     except Exception as e:
         print(e)
         await hash.reply(f"😔 some error occurred {e}")
@@ -330,7 +330,7 @@ async def gen_link_encoded(client: Bot, message: Message):
         return
     link = f"https://t.me/{client.username}?start={hash.text}"
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Hash Link", url=link)]])
-    await hash.reply_text(f"<b>Here is your generated link\n\n{link}</b>", quote=True, reply_markup=reply_markup)
+    await hash.reply_text(f"** Here is your generated link:\n\n{link}**", quote=True, reply_markup=reply_markup)
     return
         
 
