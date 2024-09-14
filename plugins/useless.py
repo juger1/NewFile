@@ -12,7 +12,7 @@ async def stats(bot: Bot, message: Message):
     time = get_readable_time(delta.seconds)
     await message.reply(BOT_STATS_TEXT.format(uptime=time))
 
-
+"""
 @Bot.on_message(filters.private & filters.incoming)
 async def useless(_, message: Message):
     if message.from_user.id in ADMINS:
@@ -23,3 +23,4 @@ async def useless(_, message: Message):
 
 BOT_STATS_TEXT = "<b>BOT UPTIME: {uptime}</b>"
 USER_REPLY_TEXT = "<blockquote><b>Don't send me messages directly I'm only File Share bot!\n Contact Bot Developer: @StupidBoi69</b></blockquote>"
+"""
