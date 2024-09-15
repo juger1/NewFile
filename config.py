@@ -1,6 +1,7 @@
 from operator import add
 import os
 import logging
+from os import environ
 
 #import dotenv
 #dotenv.load_dotenv()
@@ -14,20 +15,15 @@ DISABLE_CHANNEL_BUTTON = True if os.environ.get("DISABLE_CHANNEL_BUTTON", "TRUE"
 USE_SHORTLINK = True if os.environ.get('USE_SHORTLINK', "TRUE") == "TRUE" else False 
 USE_PAYMENT = True if (True if os.environ.get("USE_PAYMENT", "TRUE") == "TRUE" else False) and USE_SHORTLINK else False
 
-PHOTO_URL = os.environ.get("PHOTO_URL", "https://graph.org/file/fd1487021734ee86c78b4.jpg")
-
-
-# Read configuration from environment variables
-REQUEST1 = os.environ.get("REQUEST1", "https://t.me/+4_XXp0Yxets4YTY9")  # Use default link if no button
-REQUEST2 = os.environ.get("REQUEST2", "")
+PHOTO_URL = (environ.get('PHOTO_URL', 'https://envs.sh/wZl.jpg https://envs.sh/wZ8.jpg https://envs.sh/wZ7.jpg https://envs.sh/wZr.jpg https://envs.sh/wZJ.jpg https://envs.sh/wZ9.jpg https://envs.sh/wZk.jpg')).split()
 
 # Force user to join your backup channel, leave 0 if you don't need.
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1001878910741"))
-FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "0"))
+FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "-1002020304266"))
 
 # URLs are strings, so you may want to strip them in your main code
 REQUEST1 = os.getenv("REQUEST1", "https://t.me/+4_XXp0Yxets4YTY9").strip() 
-REQUEST2 = os.getenv("REQUEST2", "").strip() 
+REQUEST2 = os.getenv("REQUEST2", "https://t.me/+uGHoCMOXeT1mMjA9").strip() 
 
 
 # Bot token, API ID, and hash
@@ -53,15 +49,6 @@ SHORTLINK_API = os.environ.get("SHORTLINK_API", "a0c51b7b2b16924757c1e2eb6ca2709
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "86400"))
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/How_to_Download_7x/32")
 
-# Payment to remove token system
-UPI_ID = os.environ.get("UPI_ID", "https://t.me/StupidBoi69")
-UPI_IMAGE_URL = os.environ.get("UPI_IMAGE_URL", "https://t.me/StupidBoi69")
-SCREENSHOT_URL = os.environ.get("SCREENSHOT_URL", f"t.me/{OWNER_TAG}")
-PRICE1 = os.environ.get("PRICE1", "30 rs")
-PRICE2 = os.environ.get("PRICE2", "110 rs")
-PRICE3 = os.environ.get("PRICE3", "299 rs")
-PRICE4 = os.environ.get("PRICE4", "550 rs")
-PRICE5 = os.environ.get("PRICE5", "999 rs")
 
 # Force message for joining the channel
 FORCE_MSG = os.environ.get("FORCE_MSG", "Hello {first}\n\n<b>You need to join in my Channel/Group to use me\n\nKindly Please join Channel</b> 🥺")
