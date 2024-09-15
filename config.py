@@ -47,7 +47,9 @@ TIME = int(os.environ.get("TIME", "60"))
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "modijiurl.com")
 SHORTLINK_API = os.environ.get("SHORTLINK_API", "a0c51b7b2b16924757c1e2eb6ca27096f9df7208")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "86400"))
-TUT_VID = os.environ.get("TUT_VID", "https://t.me/How_to_Download_7x/32")
+TUT_VID = os.environ.get("TUT_VID", "https://t.me/Adult_Elixir")
+
+UPI_QR_CODE_URL = os.environ.get("UPI_QR_CODE_URL", "https://graph.org/file/fd1487021734ee86c78b4.jpg")
 
 
 # Force message for joining the channel
