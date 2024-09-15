@@ -205,7 +205,7 @@ New Link: {newLink}</b>""")
                         btn = [
                         [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
                         [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)],
-                        [InlineKeyboardButton("Buy Premium plan", callback_data="buy_prem")]
+                        [InlineKeyboardButton("Premium Membership", callback_data="premium")]
                         ]
                     else:
                         btn = [
@@ -224,13 +224,9 @@ New Link: {newLink}</b>""")
                             continue
                     except:
                         continue
-        reply_markup = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton("☎️ Contact Developer", callback_data="about"),
-                    InlineKeyboardButton("📴 Close", callback_data="close")
-                ]
-            ]
+        reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("☎️ Contact Developer", callback_data="about")],
+                [InlineKeyboardButton("📴 Close", callback_data="close")]]
         )
         await message.reply_photo(
             photo=random.choice(PHOTO_URL),
@@ -256,7 +252,7 @@ New Link: {newLink}</b>""")
             link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://t.me/{client.username}?start=verify_{token}')
             
             await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>#VERIFICATION_LINK: {message.from_user.first_name}
-User: @{message.from_user.username} • {message.from_user.id}
+User: @{message.from_user.username} • • {message.from_user.id}
 
 Verification Link: https://t.me/{client.username}?start=verify_{token}
 
@@ -266,7 +262,7 @@ Shorten Link: {link}</b>""")
                 btn = [
                 [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
                 [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)],
-                [InlineKeyboardButton("Premium Membership", callback_data="buy_prem")]
+                [InlineKeyboardButton("Premium Membership", callback_data="premium")]
                 ]
             else:
                 btn = [
@@ -538,7 +534,7 @@ Enter 5 for Six months</b>""", chat_id=message.from_user.id, timeout=60)
             await message.reply("Premium added! 🤫")
             await client.send_message(
             chat_id=user_id,
-            text=f"<b>👑 Update for you\n\nYou are added as premium member for {timestring} 😃\n\nFeedback: @StupidBoi69</b>",
+            text=f"<b>👑 Update for you\n\nYou are added as premium member for ({timestring}) 😃\n\nFeedback: @StupidBoi69</b>",
         )
         except Exception as e:
             print(e)
