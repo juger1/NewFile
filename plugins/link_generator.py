@@ -20,7 +20,7 @@ async def batch(client: Client, message: Message):
         if f_msg_id:
             break
         else:
-            await first_message.reply("❌ Error\n\nThis Forwarded Post is not from my DB Channel or This Link isn't taken from DB Channel", quote = True)
+            await first_message.reply("<b>❌ Error\n\nThis Forwarded Post is not from my DB Channel or This Link isn't taken from DB Channel</b>", quote = True)
             continue
     while True:
         try:
@@ -33,7 +33,7 @@ async def batch(client: Client, message: Message):
         if s_msg_id:
             break
         else:
-            await second_message.reply("❌ Error\n\nThis Forwarded Post is not from my DB Channel or This Link isn't taken from DB Channel", quote = True)
+            await second_message.reply("<b>❌ Error\n\nThis Forwarded Post is not from my DB Channel or This Link isn't taken from DB Channel</b>", quote = True)
             continue
         
     string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
@@ -54,7 +54,7 @@ quote=True, reply_markup=reply_markup)
 async def link_generator(client: Client, message: Message):
     while True:
         try:
-            channel_message = await client.ask(text = "Forward Message from the DB Channel ⏩ (with Quotes)..\nor Send the DB Channel Post link\nType /sgen for stopping.", chat_id = message.from_user.id, filters=(filters.forwarded | (filters.text & ~filters.forwarded)), timeout=60)
+            channel_message = await client.ask(text = "<b>Forward Message from the DB Channel ⏩ (with Quotes)..\nor Send the DB Channel Post link\nType /sgen for stopping.</b>", chat_id = message.from_user.id, filters=(filters.forwarded | (filters.text & ~filters.forwarded)), timeout=60)
         except Exception:
             return
         if channel_message.text == "/sgen":
@@ -63,7 +63,7 @@ async def link_generator(client: Client, message: Message):
         if msg_id:
             break
         else:
-            await channel_message.reply("❌ Error\n\nthis Forwarded Post is not from my DB Channel or this Link is not taken from DB Channel", quote = True)
+            await channel_message.reply("<b>❌ Error\n\nthis Forwarded Post is not from my DB Channel or this Link is not taken from DB Channel</b>", quote = True)
             continue
     base64_string = await encode(f"get-{msg_id * abs(client.db_channel.id)}")
     link = f"https://t.me/{client.username}?start={base64_string}"
