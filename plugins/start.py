@@ -345,43 +345,48 @@ async def get_users(client: Bot, message: Message):
 
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, m: Message):
-    all_users = await full_userbase()
+    all_users = await full_userbase()  # Fetch all user IDs once
     broadcast_msg = m.reply_to_message
-    sts_msg = await m.reply_text("Broadcast Starting..!") 
+    sts_msg = await m.reply_text("Broadcast starting..!") 
     done = 0
     failed = 0
     success = 0
     start_time = time.time()
-    total_users = await full_userbase()
+    total_users = len(all_users)  # Calculate total users from the fetched list
+
     async for user in all_users:
         sts = await send_msg(user['_id'], broadcast_msg)
         if sts == 200:
-           success += 1
+            success += 1
         else:
-           failed += 1
-        if sts == 400:
-           await del_user(user['_id'])
+            failed += 1
+            if sts == 400:
+                await del_user(user['_id'])  # Delete user if necessary
         done += 1
-        if not done % 20:
-           await sts_msg.edit(f"Bʀᴏᴀᴅᴄᴀꜱᴛ Iɴ Pʀᴏɢʀᴇꜱꜱ: \nTᴏᴛᴀʟ Uꜱᴇʀ {total_users} \nCᴏᴍᴩʟᴇᴛᴇᴅ: {done} / {total_users}\nSᴜᴄᴄᴇꜱꜱ: {success}\nFᴀɪʟᴇᴅ: {failed}")
+
+        if done % 20 == 0:
+            await sts_msg.edit(f"Broadcast in progress: \nTotal users: {total_users} \nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
+
     completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-    await sts_msg.edit(f"Bʀᴏᴀᴅᴄᴀꜱᴛ Cᴏᴍᴩʟᴇᴛᴇᴅ: \nCᴏᴍᴩʟᴇᴛᴇᴅ Iɴ `{completed_in}`.\n\nTᴏᴛᴀʟ Uꜱᴇʀꜱ {total_users}\nCᴏᴍᴩʟᴇᴛᴇᴅ: {done} / {total_users}\nSᴜᴄᴄᴇꜱꜱ: {success}\nFᴀɪʟᴇᴅ: {failed}")
-           
+    await sts_msg.edit(f"Broadcast completed: \nCompleted in `{completed_in}`.\n\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
+
 async def send_msg(user_id, message):
-    try:
-        await message.copy(chat_id=int(user_id))
-        return 200
-    except FloodWait as e:
-        await asyncio.sleep(e.value)
-        return send_msg(user_id, message)
-    except InputUserDeactivated:
-        return 400
-    except UserIsBlocked:
-        return 400
-    except PeerIdInvalid:
-        return 400
-    except Exception as e:
-        return 500
+    while True:
+        try:
+            await message.copy(chat_id=int(user_id))
+            return 200
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+        except InputUserDeactivated:
+            return 400
+        except UserIsBlocked:
+            return 400
+        except PeerIdInvalid:
+            return 400
+        except Exception as e:
+            logging.error(f"Error sending message to {user_id}: {str(e)}")
+            return 500
+
 
 @Bot.on_message(filters.command('add_admin') & filters.private & filters.user(OWNER_ID))
 async def command_add_admin(client: Bot, message: Message):
