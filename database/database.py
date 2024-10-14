@@ -73,16 +73,25 @@ async def db_verify_status(user_id):
 
 async def db_update_verify_status(user_id, verify):
     await user_data.update_one({'_id': user_id}, {'$set': {'verify_status': verify}})
-
+"""
 async def full_userbase():
     user_docs = user_data.find()
     user_ids = [doc['_id'] async for doc in user_docs]
     return user_ids
-
+"""
 async def del_user(user_id: int):
     await user_data.delete_one({'_id': user_id})
     return
 
+async def full_userbase():
+    user_docs = user_data.find({}, {'_id': 1})  # Only return the '_id' field
+    user_ids = [doc['_id'] async for doc in user_docs]
+    return user_ids
+
+# Bulk deletion of users who are deactivated or invalid
+async def bulk_del_users(user_ids):
+    await user_data.delete_many({'_id': {'$in': user_ids}})
+    
 #admins
 
 async def present_admin(user_id: int):
