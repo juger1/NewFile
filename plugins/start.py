@@ -345,7 +345,7 @@ async def get_users(client: Bot, message: Message):
 
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, m: Message):
-    all_users = await full_userbase()  # Fetch all user IDs once
+    all_users = await full_userbase()  # Fetch all user IDs once (list of users)
     broadcast_msg = m.reply_to_message
     sts_msg = await m.reply_text("Broadcast starting..!") 
     done = 0
@@ -354,7 +354,8 @@ async def send_text(client: Bot, m: Message):
     start_time = time.time()
     total_users = len(all_users)  # Calculate total users from the fetched list
 
-    async for user in all_users:
+    # Use a regular for loop to iterate through all_users since it's a list
+    for user in all_users:
         sts = await send_msg(user['_id'], broadcast_msg)
         if sts == 200:
             success += 1
@@ -368,7 +369,7 @@ async def send_text(client: Bot, m: Message):
             await sts_msg.edit(f"Broadcast in progress: \nTotal users: {total_users} \nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
 
     completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-    await sts_msg.edit(f"Broadcast completed: \nCompleted in `{completed_in}`.\n\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
+    await sts_msg.edit(f"Broadcast completed: \nCompleted in {completed_in}.\n\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
 
 async def send_msg(user_id, message):
     while True:
