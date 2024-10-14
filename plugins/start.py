@@ -341,53 +341,47 @@ async def get_users(client: Bot, message: Message):
     await msg.edit(f"{len(users)} users are using this bot 👥")
     return
 
+
+
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
-async def send_text(client: Bot, message: Message):
-    if message.reply_to_message:
-        query = await full_userbase()
-        broadcast_msg = message.reply_to_message
-        total = 0
-        successful = 0
-        blocked = 0
-        deleted = 0
-        unsuccessful = 0
-
-        pls_wait = await message.reply("<b>Broadcasting Message.. This will Take Some Time ⌚</b>")
-        for chat_id in query:
-            try:
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except FloodWait as e:
-                await asyncio.sleep(e.x)
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except UserIsBlocked:
-                await del_user(chat_id)
-                blocked += 1
-            except InputUserDeactivated:
-                await del_user(chat_id)
-                deleted += 1
-            except:
-                unsuccessful += 1
-                pass
-            total += 1
-
-        status = f"""<b><u>Broadcast Completed 🟢</u>
-                
-                Total Users: {total}
-                Successful: {successful}
-                Blocked Users: {blocked}
-                Deleted Accounts: {deleted}
-                Unsuccessful: {unsuccessful}</b>"""
-
-        return await pls_wait.edit(status)
-
-    else:
-        msg = await message.reply(REPLY_ERROR)
-        await asyncio.sleep(8)
-        await msg.delete()
-    return
-
+async def send_text(client: Bot, m: Message):
+    all_users = await full_userbase()
+    broadcast_msg = m.reply_to_message
+    sts_msg = await m.reply_text("Broadcast Starting..!") 
+    done = 0
+    failed = 0
+    success = 0
+    start_time = time.time()
+    total_users = await full_userbase()
+    async for user in all_users:
+        sts = await send_msg(user['_id'], broadcast_msg)
+        if sts == 200:
+           success += 1
+        else:
+           failed += 1
+        if sts == 400:
+           await del_user(user['_id'])
+        done += 1
+        if not done % 20:
+           await sts_msg.edit(f"Bʀᴏᴀᴅᴄᴀꜱᴛ Iɴ Pʀᴏɢʀᴇꜱꜱ: \nTᴏᴛᴀʟ Uꜱᴇʀ {total_users} \nCᴏᴍᴩʟᴇᴛᴇᴅ: {done} / {total_users}\nSᴜᴄᴄᴇꜱꜱ: {success}\nFᴀɪʟᴇᴅ: {failed}")
+    completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
+    await sts_msg.edit(f"Bʀᴏᴀᴅᴄᴀꜱᴛ Cᴏᴍᴩʟᴇᴛᴇᴅ: \nCᴏᴍᴩʟᴇᴛᴇᴅ Iɴ `{completed_in}`.\n\nTᴏᴛᴀʟ Uꜱᴇʀꜱ {total_users}\nCᴏᴍᴩʟᴇᴛᴇᴅ: {done} / {total_users}\nSᴜᴄᴄᴇꜱꜱ: {success}\nFᴀɪʟᴇᴅ: {failed}")
+           
+async def send_msg(user_id, message):
+    try:
+        await message.copy(chat_id=int(user_id))
+        return 200
+    except FloodWait as e:
+        await asyncio.sleep(e.value)
+        return send_msg(user_id, message)
+    except InputUserDeactivated:
+        return 400
+    except UserIsBlocked:
+        return 400
+    except PeerIdInvalid:
+        return 400
+    except Exception as e:
+        return 500
 
 @Bot.on_message(filters.command('add_admin') & filters.private & filters.user(OWNER_ID))
 async def command_add_admin(client: Bot, message: Message):
