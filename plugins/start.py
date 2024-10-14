@@ -343,113 +343,159 @@ async def get_users(client: Bot, message: Message):
 
 
 
+# Broadcast messages concurrently in batches
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, m: Message):
-    all_users = await full_userbase()  # Fetch all user IDs once (list of users)
+    all_users = await full_userbase()  # Fetch all user IDs once
     broadcast_msg = m.reply_to_message
     sts_msg = await m.reply_text("Broadcast starting..!") 
     done = 0
     failed = 0
     success = 0
     start_time = time.time()
-    total_users = len(all_users)  # Calculate total users from the fetched list
+    total_users = len(all_users)
+    batch_size = 50  # Send messages in batches (you can adjust this)
+    inactive_users = []
 
-    # Use a regular for loop to iterate through all_users since it's a list
-    for user in all_users:
-        sts = await send_msg(user['_id'], broadcast_msg)
-        if sts == 200:
-            success += 1
-        else:
-            failed += 1
-            if sts == 400:
-                await del_user(user['_id'])  # Delete user if necessary
-        done += 1
+    # Function to send a message to a batch of users
+    async def process_batch(batch):
+        nonlocal success, failed, inactive_users
+        tasks = []
+        for user_id in batch:
+            tasks.append(send_msg(user_id, broadcast_msg))
+        
+        results = await asyncio.gather(*tasks)
+        for user_id, result in zip(batch, results):
+            if result == 200:
+                success += 1
+            else:
+                failed += 1
+                if result == 400:  # Mark user as inactive for deletion
+                    inactive_users.append(user_id)
 
-        if done % 20 == 0:
-            await sts_msg.edit(f"Broadcast in progress: \nTotal users: {total_users} \nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
+    # Process all users in batches
+    for i in range(0, total_users, batch_size):
+        batch = all_users[i:i + batch_size]
+        await process_batch(batch)
+        done += len(batch)
+
+        # Update the status message every batch
+        await sts_msg.edit(f"Broadcast in progress: \nTotal users: {total_users} \nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
+
+    # Delete inactive users in bulk after broadcasting
+    if inactive_users:
+        await bulk_del_users(inactive_users)
 
     completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-    await sts_msg.edit(f"Broadcast completed: \nCompleted in {completed_in}.\n\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
+    await sts_msg.edit(f"Broadcast completed: \nCompleted in `{completed_in}`.\n\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
 
+# Helper function for sending messages
 async def send_msg(user_id, message):
-    while True:
-        try:
-            await message.copy(chat_id=int(user_id))
-            return 200
-        except FloodWait as e:
-            await asyncio.sleep(e.value)
-        except InputUserDeactivated:
-            return 400
-        except UserIsBlocked:
-            return 400
-        except PeerIdInvalid:
-            return 400
-        except Exception as e:
-            logging.error(f"Error sending message to {user_id}: {str(e)}")
-            return 500
+    try:
+        await message.copy(chat_id=int(user_id))  # Send message to the user
+        return 200
+    except FloodWait as e:
+        await asyncio.sleep(e.value)  # Handle FloodWait exception by waiting
+        return await send_msg(user_id, message)  # Retry sending the message
+    except (InputUserDeactivated, UserIsBlocked, PeerIdInvalid):
+        return 400  # Handle invalid/deactivated user
+    except Exception as e:
+        logging.error(f"Error sending message to {user_id}: {str(e)}")
+        return 500  # Handle any other errors
 
 
 @Bot.on_message(filters.command('add_admin') & filters.private & filters.user(OWNER_ID))
 async def command_add_admin(client: Bot, message: Message):
     while True:
         try:
-            admin_id = await client.ask(text="Enter userid to add admin\nHit /cancel to cancel",chat_id = message.from_user.id, timeout=60)
+            # Ask the owner for the user ID they want to add as admin
+            admin_id = await client.ask(text="Enter user ID to add as admin\nHit /cancel to cancel", chat_id=message.from_user.id, timeout=60)
         except Exception as e:
             print(e)
             return
+        
+        # If the user cancels the process
         if admin_id.text == "/cancel":
             await admin_id.reply("Cancelled 😉!")
             return
-        try:
-            await Bot.get_users(user_ids=admin_id.text, self=client)
-            break
-        except:
-            await admin_id.reply("❌ Error 😖\n\nThe userid is incorrect.", quote = True)
+        
+        # Validate if the input is a valid numeric user ID
+        if not admin_id.text.isdigit():
+            await admin_id.reply("❌ Error 😖\n\nPlease enter a valid numeric user ID.", quote=True)
             continue
-    if not await present_admin(admin_id.text):
+        
         try:
-            await add_admin(admin_id.text)
-            await message.reply(f"<b>Admin {admin_id.text} added successfully")
+            # Check if the user exists using Pyrogram's get_users method
+            await client.get_users(user_ids=admin_id.text)
+            break  # Exit loop if the user ID is valid
+        except Exception:
+            await admin_id.reply("❌ Error 😖\n\nThe user ID is incorrect.", quote=True)
+            continue
+    
+    # Now, check if the user is already an admin in the MongoDB database
+    if not await present_admin(int(admin_id.text)):
+        try:
+            # Add the user as admin in the MongoDB database
+            await add_admin(int(admin_id.text))
+            await message.reply(f"<b>Admin {admin_id.text} added successfully</b>")
+            
+            # Notify the new admin
             try:
                 await client.send_message(
                     chat_id=admin_id.text,
-                    text=f"You are verified, ask the owner to add them to db channels. 😁"
+                    text="You are now an admin! Ask the owner to add you to the required channels. 😁"
                 )
-            except:
-                await message.reply("Failed to send invite. Please ensure that they have started the bot. 🥲")
-        except:
+            except Exception:
+                await message.reply("Failed to notify the user. Ensure they have started the bot. 🥲")
+        except Exception as e:
+            print(f"Error adding admin: {e}")
             await message.reply("Failed to add admin. 😔\nSome error occurred.")
     else:
-        await message.reply("Admin already exist. 💀")
+        await message.reply("Admin already exists. 💀")
     return
 
 
-@Bot.on_message(filters.command('del_admin') & filters.private  & filters.user(OWNER_ID))
+@Bot.on_message(filters.command('del_admin') & filters.private & filters.user(OWNER_ID))
 async def delete_admin_command(client: Bot, message: Message):
     while True:
         try:
-            admin_id = await client.ask(text="Enter userid to remove admin\nHit /cancel to cancel",chat_id = message.from_user.id, timeout=60)
-        except:
+            # Ask the owner for the user ID they want to remove as admin
+            admin_id = await client.ask(text="Enter user ID to remove as admin\nHit /cancel to cancel", chat_id=message.from_user.id, timeout=60)
+        except Exception as e:
+            print(e)
             return
+        
+        # If the user cancels the process
         if admin_id.text == "/cancel":
             await admin_id.reply("Cancelled 😉!")
             return
-        try:
-            await Bot.get_users(user_ids=admin_id.text, self=client)
-            break
-        except:
-            await admin_id.reply("❌ Error\n\nThe userid is incorrect.", quote = True)
+        
+        # Validate if the input is a valid numeric user ID
+        if not admin_id.text.isdigit():
+            await admin_id.reply("❌ Error 😖\n\nPlease enter a valid numeric user ID.", quote=True)
             continue
-    if await present_admin(admin_id.text):
+        
         try:
-            await del_admin(admin_id.text)
+            # Check if the user exists using Pyrogram's get_users method
+            await client.get_users(user_ids=admin_id.text)
+            break  # Exit loop if the user ID is valid
+        except Exception:
+            await admin_id.reply("❌ Error 😖\n\nThe user ID is incorrect.", quote=True)
+            continue
+    
+    # Check if the user is an admin in the MongoDB database
+    if await present_admin(int(admin_id.text)):
+        try:
+            # Remove the user as admin from MongoDB
+            await del_admin(int(admin_id.text))
             await message.reply(f"<b>Admin {admin_id.text} removed successfully 😀</b>")
         except Exception as e:
-            print(e)
+            print(f"Error removing admin: {e}")
             await message.reply("Failed to remove admin. 😔\nSome error occurred.")
     else:
-        await message.reply("admin doesn't exist. 💀")
+        await message.reply("Admin doesn't exist. 💀")
     return
+
 
 @Bot.on_message(filters.command('admins')  & filters.private & filters.private)
 async def admin_list_command(client: Bot, message: Message):
@@ -463,7 +509,7 @@ async def check_ping_command(client: Bot, message: Message):
     rm = await message.reply_text("Pinging....", quote=True)
     end_t = time.time()
     time_taken_s = (end_t - start_t) * 1000
-    await rm.edit(f"**Ping 🔥!\n{time_taken_s:.3f} ms**")
+    await rm.edit(f"Ping 🔥!\n{time_taken_s:.3f} ms")
     return
 
 
@@ -486,26 +532,34 @@ if USE_PAYMENT:
     async def add_user_premium_command(client: Bot, message: Message):
         while True:
             try:
-                user_id = await client.ask(text="Enter userid for premium membership\nHit /cancel to cancel", chat_id = message.from_user.id, timeout=60)
+                user_id = await client.ask(text="Enter user ID for premium membership\nHit /cancel to cancel", chat_id=message.from_user.id, timeout=60)
             except Exception as e:
                 print(e)
                 return  
             if user_id.text == "/cancel":
-                await user_id.edit("Cancelled 😉!")
+                await user_id.reply("Cancelled 😉!")  # Changed edit() to reply()
                 return
-            try:
-                await Bot.get_users(user_ids=user_id.text, self=client)
-                break
-            except:
-                await user_id.edit("❌ Error\n\nThe user id is incorrect.", quote = True)
+            
+            # Validate if the input is a valid numeric user ID
+            if not user_id.text.isdigit():
+                await user_id.reply("❌ Error\n\nThe user ID is incorrect. Please enter a valid numeric user ID.", quote=True)
                 continue
+            
+            # Attempt to get user details
+            try:
+                await client.get_users(user_ids=int(user_id.text))  # Ensure user_id is an integer
+                break
+            except Exception:
+                await user_id.reply("❌ Error\n\nThe user ID is incorrect.", quote=True)
+                continue
+
         user_id = int(user_id.text)
         while True:
             try:
                 timeforprem = await client.ask(text="""<blockquote><b>👛 Enter the amount of time you want to provide the premium user</b></blockquote>
-<b>(Note: Choose correctly, its not reversible.)
+<b>(Note: Choose correctly, it's not reversible.)
 
-Enter 1 for One time verification
+Enter 1 for One-time verification
 Enter 2 for One week
 Enter 3 for One month
 Enter 4 for Three months
@@ -513,32 +567,31 @@ Enter 5 for Six months</b>""", chat_id=message.from_user.id, timeout=60)
             except Exception as e:
                 print(e)
                 return
-            if not int(timeforprem.text) in [1, 2, 3, 4, 5]:
+
+            if not timeforprem.text.isdigit() or int(timeforprem.text) not in [1, 2, 3, 4, 5]:
                 await message.reply("You have given wrong input. 😖")
                 continue
             else:
                 break
+        
         timeforprem = int(timeforprem.text)
-        if timeforprem==1:
-            timestring = "One time verified"
-        elif timeforprem==2:
-            timestring = "One week"
-        elif timeforprem==3:
-            timestring = "One month"
-        elif timeforprem==4:
-            timestring = "Three month"
-        elif timeforprem==5:
-            timestring = "Six months"
+        timestring = {
+            1: "One time verified",
+            2: "One week",
+            3: "One month",
+            4: "Three months",
+            5: "Six months"
+        }[timeforprem]
+
         try:
-            await increasepremtime(user_id, timeforprem)
+            await increasepremtime(user_id, timeforprem)  # Function to increase premium time
             await message.reply("Premium added! 🤫")
             await client.send_message(
-            chat_id=user_id,
-            text=f"<b>👑 Update for you\n\nYou are added as premium member for ({timestring}) 😃\n\nFeedback: @StupidBoi69</b>",
-        )
+                chat_id=user_id,
+                text=f"<b>👑 Update for you\n\nYou are added as a premium member for ({timestring}) 😃\n\nFeedback: @StupidBoi69</b>",
+            )
         except Exception as e:
             print(e)
-            await message.reply("Some error occurred.\nCheck logs.. 😖\nIf you got premium added message then its ok.")
+            await message.reply("Some error occurred.\nCheck logs.. 😖\nIf you got a premium added message, then it's ok.")
         return
 
-        
