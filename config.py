@@ -9,17 +9,17 @@ from os import environ
 from logging.handlers import RotatingFileHandler
 
 # TRUE or FALSE
-U_S_E_P = True if (True if os.environ.get('U_S_E_P', "FALSE") == "TRUE" else False) and USE_SHORTLINK else False
+U_S_E_P = True if (True if os.environ.get('U_S_E_P', "TRUE") == "TRUE" else False) and USE_SHORTLINK else False
 PROTECT_CONTENT = True if os.environ.get("PROTECT_CONTENT", "FALSE") == "TRUE" else False
 DISABLE_CHANNEL_BUTTON = True if os.environ.get("DISABLE_CHANNEL_BUTTON", "TRUE") == "TRUE" else False
 USE_SHORTLINK = True if os.environ.get('USE_SHORTLINK', "TRUE") == "TRUE" else False 
 USE_PAYMENT = True if (True if os.environ.get("USE_PAYMENT", "TRUE") == "TRUE" else False) and USE_SHORTLINK else False
 
-PHOTO_URL = (environ.get('PHOTO_URL', 'https://envs.sh/wZl.jpg https://envs.sh/wZ8.jpg https://envs.sh/wZ7.jpg https://envs.sh/wZr.jpg https://envs.sh/wZJ.jpg https://envs.sh/wZ9.jpg https://envs.sh/wZk.jpg')).split()
+PHOTO_URL = (environ.get('PHOTO_URL', 'https://envs.sh/wZJ.jpg')).split()
 
 # Force user to join your backup channel, leave 0 if you don't need.
-FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1001878910741"))
-FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "-1002020304266"))
+FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002005229886"))
+FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "-1002198612616"))
 
 # URLs are strings, so you may want to strip them in your main code
 REQUEST1 = os.getenv("REQUEST1", "https://t.me/+4_XXp0Yxets4YTY9").strip() 
@@ -27,7 +27,7 @@ REQUEST2 = os.getenv("REQUEST2", "https://t.me/+uGHoCMOXeT1mMjA9").strip()
 
 
 # Bot token, API ID, and hash
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7453211392:AAGU0HOcv7lbPmIf1E4WKXiCyycMNoZnPro") 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7288528064:AAE8CFN268-DFirMUYngqgRSc85WULDqpMo") 
 APP_ID = int(os.environ.get("APP_ID", "25695562"))
 API_HASH = os.environ.get("API_HASH", "0b691c3e86603a7e34aae0b5927d725a")
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1001732352061"))
@@ -39,7 +39,7 @@ PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://pabagav476aersmcom:pabagav476aersmcom@cluster0.5jd4dlx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 DB_NAME = os.environ.get("DB_NAME", "filestorebot")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "60"))
-START_MSG = os.environ.get("START_MESSAGE", "Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link. 💾")
+START_MSG = os.environ.get("START_MESSAGE", "<blockquote><b>Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link. 💾</b></blockquote>")
 OWNER_TAG = os.environ.get("OWNER_TAG", "stupidBoi")
 TIME = int(os.environ.get("TIME", "60"))
 
@@ -53,7 +53,7 @@ UPI_QR_CODE_URL = os.environ.get("UPI_QR_CODE_URL", "https://graph.org/file/fd14
 
 
 # Force message for joining the channel
-FORCE_MSG = os.environ.get("FORCE_MSG", "Hello {first}\n\n<b>You need to join in my Channel/Group to use me\n\nKindly Please join Channel</b> 🥺")
+FORCE_MSG = os.environ.get("FORCE_MSG", "<blockquote><b>Hello {first}\n\nYou need to join in my Channel/Group to use me\n\nKindly Please join Channel</b></blockquote>🥺")
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
 # Admins
