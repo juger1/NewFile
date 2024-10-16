@@ -194,12 +194,13 @@ async def start_command(client: Client, message: Message):
                             pass
                     clicks = await get_clicks(newbase64_string)
                     newLink = f"https://t.me/{client.username}?start={newbase64_string}"
-                    link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'{newLink}')            
+                    link = await get_shortlink(newLink)            
                     
                     await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>#NEW_LINK: {message.from_user.first_name}
 User: @{message.from_user.username} • {message.from_user.id}
 
-New Link: {newLink}</b>""")
+New Link: {newLink}
+Shorten Link: {link}</b>""")
                 
                     if USE_PAYMENT:
                         btn = [
@@ -249,12 +250,13 @@ New Link: {newLink}</b>""")
         if not verify_status['is_verified']:
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
             await update_verify_status(id, verify_token=token, link="")
-            link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://t.me/{client.username}?start=verify_{token}')
+            verification_link = f"https://t.me/{client.username}?start=verify_{token}"
+            link = await get_shortlink(verification_link)
             
             await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>#VERIFICATION_LINK: {message.from_user.first_name}
 User: @{message.from_user.username} • • {message.from_user.id}
 
-Verification Link: https://t.me/{client.username}?start=verify_{token}
+Verification Link: {verification_link}
 
 Shorten Link: {link}</b>""")
                     
