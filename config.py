@@ -47,6 +47,24 @@ TIME = int(os.environ.get("TIME", "60"))
 # Shortlink configuration
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "modijiurl.com")
 SHORTLINK_API = os.environ.get("SHORTLINK_API", "a0c51b7b2b16924757c1e2eb6ca27096f9df7208")
+
+
+MULTI_SHORTENER = {
+    "morning": {
+        "api_key": "a0c51b7b2b16924757c1e2eb6ca27096f9df7208",  
+        "base_url": "modijiurl.com", 
+    },
+    "afternoon": {
+        "api_key": "3a2c084d61d0813b05a00cd9ba564e92e39f92cb", 
+        "base_url": "runurl.in", 
+    },
+    "evening": {
+        "api_key": "b754779708a523cd75c9c9ef419d8fd8b7f954da",
+        "base_url": "kingurl.in", 
+    }
+}
+
+    
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "86400"))
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/Adult_Elixir")
 
