@@ -143,32 +143,41 @@ async def get_shortlink(url, api, link):
     link = await shortzy.convert(link)
     return link
 """
-class Shortzy:
-    def __init__(self, api_key, base_site):
-        self.api_key = api_key
-        self.base_site = base_site
+async def get_verify_status(user_id):
+    verify = await db_verify_status(user_id)
+    return verify
 
-    async def convert(self, link):
-        await asyncio.sleep(1)
-        return f"{self.base_site}/shortened/{link.split('/')[-1]}"
+async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=0, link=""):
+    current = await db_verify_status(user_id)
+    current['verify_token'] = verify_token
+    current['is_verified'] = is_verified
+    current['verified_time'] = verified_time
+    current['link'] = link
+    await db_update_verify_status(user_id, current)
 
 async def get_shortlink(link):
-    try:
-        current_time = datetime.now() + timedelta(hours=5, minutes=30)
-        hour = current_time.hour
+    current_time = datetime.now() + timedelta(hours=5, minutes=30)
+    hour = current_time.hour
+    
+    if 1 <= hour < 13:  
+        api = "b754779708a523cd75c9c9ef419d8fd8b7f954da"
+        site = "kingurl.in"
+    else:  
+        api = "3a2c084d61d0813b05a00cd9ba564e92e39f92cb"
+        site = "runurl.in"
+    
+    shortzy = Shortzy(api_key=api, base_site=site)
+    link = await shortzy.convert(link)
+    return link
 
-        if 1 <= hour < 12:
-            multi_shortener = config.MULTI_SHORTENER['morning']
-        elif 12 <= hour < 18:
-            multi_shortener = config.MULTI_SHORTENER['afternoon']
-        else:
-            multi_shortener = config.MULTI_SHORTENER['evening']
-
-        shortzy = Shortzy(api_key=multi_shortener['api_key'], base_site=multi_shortener['base_url'])
-        return await shortzy.convert(link)
-    except Exception as e:
-        print(f"Error shortening link: {e}")
-        return link
+def get_exp_time(seconds):
+    periods = [('days', 86400), ('hours', 3600), ('mins', 60), ('secs', 1)]
+    result = ''
+    for period_name, period_seconds in periods:
+        if seconds >= period_seconds:
+            period_value, seconds = divmod(seconds, period_seconds)
+            result += f'{int(period_value)} {period_name} '
+    return result.strip()
 
 
 
