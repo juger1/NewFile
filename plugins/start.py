@@ -61,7 +61,7 @@ async def start_command(client: Client, message: Message):
                 return
             _string = await decode(base64_string)
             argument = _string.split("-")
-            if (len(argument) == 5 )or (len(argument) == 4):
+            if (len(argument) == 5 ) or (len(argument) == 4):
                 if not await present_hash(base64_string):
                     try:
                         await gen_new_count(base64_string)
@@ -198,21 +198,27 @@ async def start_command(client: Client, message: Message):
                     newLink = f"https://t.me/{client.username}?start={newbase64_string}"
                     link = await get_shortlink(newLink)            
                     
-                    await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>#NEW_LINK: {message.from_user.first_name}
-User: @{message.from_user.username} • {message.from_user.id}
+                    await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>
+#NEW_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})</b>
+
+@{message.from_user.mention} • {message.from_user.id}
+Bot Username: @{client.username}
 
 New Link: {newLink}
-Shorten Link: {link}</b>""")
-                
+
+Shorten Link: {link}
+</b>""", 
+    parse_mode="HTML"
+)                
                     if USE_PAYMENT:
                         btn = [
-                        [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                        [InlineKeyboardButton("↪️ Get Download Link ↩️", url=link)],
                         [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)],
                         [InlineKeyboardButton("Premium Membership", callback_data="premium")]
                         ]
                     else:
                         btn = [
-                        [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                        [InlineKeyboardButton("↪️ Get Download Link ↩️", url=link)],
                         [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                         ]
                     await message.reply_photo(photo=random.choice(PHOTO_URL), caption=f"<blockquote><b>Total clicks: {clicks}. Here is your link </b></blockquote>.", reply_markup=InlineKeyboardMarkup(btn), quote=True)
@@ -255,22 +261,28 @@ Shorten Link: {link}</b>""")
             verification_link = f"https://t.me/{client.username}?start=verify_{token}"
             link = await get_shortlink(verification_link)
             
-            await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>#VERIFICATION_LINK: {message.from_user.first_name}
-User: @{message.from_user.username} • • {message.from_user.id}
+            await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>
+#VERIFICATION_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})</b>
+
+@{message.from_user.mention} • {message.from_user.id}
+Bot Username: @{client.username}
 
 Verification Link: {verification_link}
 
-Shorten Link: {link}</b>""")
-                    
+Shorten Link: {link}
+</b>""", 
+    parse_mode="HTML"
+            )
+            
             if USE_PAYMENT:
                 btn = [
-                [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                [InlineKeyboardButton("↪️ Get token for free access ↩️", url=link)],
                 [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)],
                 [InlineKeyboardButton("Premium Membership", callback_data="premium")]
                 ]
             else:
                 btn = [
-                [InlineKeyboardButton("↪️ Get free access for 24-hrs ↩️", url=link)],
+                [InlineKeyboardButton("↪️ Get token for free access ↩️", url=link)],
                 [InlineKeyboardButton('🦋 Tutorial', url=TUT_VID)]
                 ]
             await message.reply_photo(photo=random.choice(PHOTO_URL), caption=f"<blockquote><b>ℹ️ Hi @{message.from_user.username}\nYour verification is expired, click on below button and complete the verification to\n <u>Get free access for 24-hrs</u></b></blockquote>", reply_markup=InlineKeyboardMarkup(btn), quote=True)
