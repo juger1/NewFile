@@ -2,7 +2,7 @@
 pyrofork
 pyrogram
 TgCrypto
-#pyromod
+pyromod
 # --- For-Database ------------ #
 pymongo
 motor
