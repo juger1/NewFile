@@ -45,7 +45,7 @@ OWNER_TAG = os.environ.get("OWNER_TAG", "StupidBoi69")
 TIME = int(os.environ.get("TIME", "3600"))
 
     
-VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "86400"))
+VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "46800"))
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/Adult_Elixir")
 UPI_QR_CODE_URL = os.environ.get("UPI_QR_CODE_URL", "https://graph.org/file/fd1487021734ee86c78b4.jpg")
 
