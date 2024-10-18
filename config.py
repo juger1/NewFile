@@ -27,33 +27,31 @@ REQUEST1 = os.environ.get("REQUEST1", "https://t.me/+LWJv7cjURvoyYWU1")
 REQUEST2 = os.environ.get("REQUEST2", "https://t.me/+R6xc_7a0yX4xYzVl")
 
 # Bot token, API ID, and hash
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7227898838:AAE09d00tLDqS2_QbykRIz8LRi8NSwtL3F4") 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "6737569405:AAHwpHE4G_DTwP0vmFYdS1j9pU8DgOpF2ao") 
 APP_ID = int(os.environ.get("APP_ID", "25695562"))
 API_HASH = os.environ.get("API_HASH", "0b691c3e86603a7e34aae0b5927d725a")
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1001902545745"))
 OWNER_ID = int(os.environ.get("OWNER_ID", "1895952308"))
 LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002117941809"))
+CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
 # Other bot configurations
 PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://skiliggeeXporter:skiliggeeXporter@cluster0.tdxtakc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-DB_NAME = os.environ.get("DB_NAME", "Cluster0")
+DB_NAME = os.environ.get("DB_NAME", "AdultElixir")
 
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "69"))
-START_MSG = os.environ.get("START_MESSAGE", "<blockquote><b>Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link. 💾</b></blockquote>")
 OWNER_TAG = os.environ.get("OWNER_TAG", "StupidBoi69")
 TIME = int(os.environ.get("TIME", "3600"))
 
     
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "86400"))
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/Adult_Elixir")
-
 UPI_QR_CODE_URL = os.environ.get("UPI_QR_CODE_URL", "https://graph.org/file/fd1487021734ee86c78b4.jpg")
 
+START_MSG = os.environ.get("START_MESSAGE", "<blockquote><b>ℹ️ Hello {mention} Welcome to our 18+ Contact Provider Bot. Exclusively work for <a href='https://t.me/Adult_Elixir'>Elixir of Lust</a></b></blockquote>")
+FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<blockquote><b>ℹ️ Hello {mention}\nYou need to join in my Channel to use me\nKindly Please join Channel</b></blockquote>")
 
-# Force message for joining the channel
-FORCE_MSG = os.environ.get("FORCE_MSG", "<blockquote><b>Hello {first}\n\nYou need to join in my Channel/Group to use me\n\nKindly Please join Channel</b></blockquote>🥺")
-CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
 # Admins
 ADMINS = os.environ.get("ADMINS", "1895952308").split()
