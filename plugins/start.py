@@ -207,9 +207,7 @@ Bot Username: @{client.username}
 New Link: {newLink}
 
 Shorten Link: {link}
-</b>""", 
-    parse_mode="html"
-)                
+</b>""")                
                     if USE_PAYMENT:
                         btn = [
                         [InlineKeyboardButton("↪️ Get Download Link ↩️", url=link)],
@@ -270,9 +268,7 @@ Bot Username: @{client.username}
 Verification Link: {verification_link}
 
 Shorten Link: {link}
-</b>""", 
-    parse_mode="html"
-            )
+</b>""")
             
             if USE_PAYMENT:
                 btn = [
@@ -403,7 +399,14 @@ async def send_text(client: Bot, m: Message):
         await bulk_del_users(inactive_users)
 
     completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-    await sts_msg.edit(f"Broadcast completed: \nCompleted in `{completed_in}`.\n\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}")
+    await sts_msg.edit(f"""<blockquote><b>
+Broadcast completed: Completed in {completed_in}.
+
+-Total users: {total_users}
+-Completed: {done} / {total_users}
+-Success: {success}
+-Failed: {failed}
+</b></blockquote>""")
 
 # Helper function for sending messages
 async def send_msg(user_id, message):
