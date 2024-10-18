@@ -27,7 +27,7 @@ REQUEST1 = os.environ.get("REQUEST1", "https://t.me/+LWJv7cjURvoyYWU1")
 REQUEST2 = os.environ.get("REQUEST2", "https://t.me/+R6xc_7a0yX4xYzVl")
 
 # Bot token, API ID, and hash
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7227898838:AAE09d00tLDqS2_QbykRIz8LRi8NSwtL3F4") 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "6341809781:AAGyxkWGgStpbb7bMhVDmJF1dTWuwWF6PCg") 
 APP_ID = int(os.environ.get("APP_ID", "25695562"))
 API_HASH = os.environ.get("API_HASH", "0b691c3e86603a7e34aae0b5927d725a")
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1001902545745"))
@@ -36,7 +36,7 @@ LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002117941809"))
 
 # Other bot configurations
 PORT = os.environ.get("PORT", "8080")
-DB_URL = os.environ.get("DB_URL", "mongodb+srv://skiliggeeXporter:skiliggeeXporter@cluster0.tdxtakc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DB_URL = os.environ.get("DB_URL", "mongodb+srv://deweyo5270minhluncom:deweyo5270minhluncom@cluster0.9ualtow.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 DB_NAME = os.environ.get("DB_NAME", "Cluster0")
 
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "69"))
@@ -45,7 +45,7 @@ OWNER_TAG = os.environ.get("OWNER_TAG", "StupidBoi69")
 TIME = int(os.environ.get("TIME", "3600"))
 
     
-VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "86400"))
+VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "46800"))
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/Adult_Elixir")
 
 UPI_QR_CODE_URL = os.environ.get("UPI_QR_CODE_URL", "https://graph.org/file/fd1487021734ee86c78b4.jpg")
