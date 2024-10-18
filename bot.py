@@ -7,10 +7,10 @@ import sys
 from pyromod import listen
 from datetime import datetime
 
-from config import ADMINS, API_HASH, APP_ID, LOGGER, TG_BOT_TOKEN, TG_BOT_WORKERS, FORCE_SUB_CHANNEL,FORCE_SUB_CHANNEL2, CHANNEL_ID, PORT, OWNER_ID
+from config import ADMINS, API_HASH, APP_ID, LOGGER, TG_BOT_TOKEN, TG_BOT_WORKERS, FORCE_SUB_CHANNEL, FORCE_SUB_CHANNEL2, CHANNEL_ID, PORT, OWNER_ID
 
 
-# fix for current pyrogram 
+# Fix for current pyrogram peer_type
 from pyrogram import utils
 
 def get_peer_type_new(peer_id: int) -> str:
@@ -22,7 +22,6 @@ def get_peer_type_new(peer_id: int) -> str:
     else:
         return "chat"
 utils.get_peer_type = get_peer_type_new
-
 
 
 class Bot(Client):
@@ -39,11 +38,15 @@ class Bot(Client):
         )
         self.LOGGER = LOGGER
 
+        # Initialize pyromod listen for handling incoming messages
+        listen.listen(self)
+
     async def start(self):
         await super().start()
         usr_bot_me = await self.get_me()
         self.uptime = datetime.now()
 
+        # Force Subscription Channels Setup
         if FORCE_SUB_CHANNEL:
             try:
                 link = (await self.get_chat(FORCE_SUB_CHANNEL)).invite_link
@@ -53,9 +56,10 @@ class Bot(Client):
                 self.invitelink = link
             except Exception as a:
                 self.LOGGER(__name__).warning(a)
-                self.LOGGER(__name__).warning("Bot can't Export Invite link from Force Sub Channel!")
-                self.LOGGER(__name__).warning(f"Please Double check the FORCE_SUB_CHANNEL value and Make sure Bot is Admin in channel with Invite Users via Link Permission, Current Force Sub Channel Value: {FORCE_SUB_CHANNEL}")
+                self.LOGGER(__name__).warning("Bot can't export Invite link from Force Sub Channel!")
+                self.LOGGER(__name__).warning(f"Please double-check the FORCE_SUB_CHANNEL value and make sure the bot is Admin in the channel with 'Invite Users via Link' permission. Current Force Sub Channel Value: {FORCE_SUB_CHANNEL}")
                 sys.exit()
+
         if FORCE_SUB_CHANNEL2:
             try:
                 link = (await self.get_chat(FORCE_SUB_CHANNEL2)).invite_link
@@ -65,36 +69,39 @@ class Bot(Client):
                 self.invitelink2 = link
             except Exception as a:
                 self.LOGGER(__name__).warning(a)
-                self.LOGGER(__name__).warning("Bot can't Export Invite link from Force Sub Channel!")
-                self.LOGGER(__name__).warning(f"Please Double check the FORCE_SUB_CHANNEL value and Make sure Bot is Admin in channel with Invite Users via Link Permission, Current Force Sub Channel Value: {FORCE_SUB_CHANNEL2}")
+                self.LOGGER(__name__).warning("Bot can't export Invite link from Force Sub Channel 2!")
+                self.LOGGER(__name__).warning(f"Please double-check the FORCE_SUB_CHANNEL2 value and make sure the bot is Admin in the channel with 'Invite Users via Link' permission. Current Force Sub Channel 2 Value: {FORCE_SUB_CHANNEL2}")
                 sys.exit()
+
+        # Check DB Channel and permissions
         try:
             db_channel = await self.get_chat(CHANNEL_ID)
             self.db_channel = db_channel
-            test = await self.send_message(chat_id = db_channel.id, text = "Test Message")
+            test = await self.send_message(chat_id=db_channel.id, text="Test Message")
             await test.delete()
         except Exception as e:
             self.LOGGER(__name__).warning(e)
-            self.LOGGER(__name__).warning(f"Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value {CHANNEL_ID}")
+            self.LOGGER(__name__).warning(f"Make sure the bot is admin in the DB Channel, and double-check the CHANNEL_ID value. Current Value: {CHANNEL_ID}")
             sys.exit()
-        
+
+        # Initialize Admins
         initadmin = await full_adminbase()
         for x in initadmin:
             if x in ADMINS:
                 continue
             ADMINS.append(x)
+
+        # Notify the bot owner that the bot has started
         await self.send_message(
             chat_id=OWNER_ID,
             text="Bot has started! 😉"
         )
 
-
         self.set_parse_mode(ParseMode.HTML)
         self.LOGGER(__name__).info(f"Bot Running..!")
         self.username = usr_bot_me.username
 
-        
-        #web-response
+        # Start the web server
         app = web.AppRunner(await web_server())
         await app.setup()
         bind_address = "0.0.0.0"
@@ -103,3 +110,9 @@ class Bot(Client):
     async def stop(self, *args):
         await super().stop()
         self.LOGGER(__name__).info("Bot stopped.")
+
+
+# Start the bot
+if __name__ == "__main__":
+    bot = Bot()
+    bot.run()
