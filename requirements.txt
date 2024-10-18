@@ -1,7 +1,6 @@
 # --- For-Bot-Working --------- #
 pyrofork
 pyrogram
-pyrotgfork
 TgCrypto
 pyromod
 # --- For-Database ------------ #
