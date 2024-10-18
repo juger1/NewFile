@@ -23,26 +23,26 @@ FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002005229886"))
 FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "-1002198612616"))
 
 # URLs are strings, so you may want to strip them in your main code
-REQUEST1 = os.getenv("REQUEST1", "https://t.me/+4_XXp0Yxets4YTY9").strip() 
-REQUEST2 = os.getenv("REQUEST2", "https://t.me/+uGHoCMOXeT1mMjA9").strip() 
-
+REQUEST1 = os.environ.get("REQUEST1", "https://t.me/+LWJv7cjURvoyYWU1")
+REQUEST2 = os.environ.get("REQUEST2", "https://t.me/+R6xc_7a0yX4xYzVl")
 
 # Bot token, API ID, and hash
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7288528064:AAE8CFN268-DFirMUYngqgRSc85WULDqpMo") 
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7227898838:AAE09d00tLDqS2_QbykRIz8LRi8NSwtL3F4") 
 APP_ID = int(os.environ.get("APP_ID", "25695562"))
 API_HASH = os.environ.get("API_HASH", "0b691c3e86603a7e34aae0b5927d725a")
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1001732352061"))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1001902545745"))
 OWNER_ID = int(os.environ.get("OWNER_ID", "1895952308"))
 LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002117941809"))
 
 # Other bot configurations
 PORT = os.environ.get("PORT", "8080")
-DB_URL = os.environ.get("DB_URL", "mongodb+srv://pabagav476aersmcom:pabagav476aersmcom@cluster0.5jd4dlx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-DB_NAME = os.environ.get("DB_NAME", "filestorebot")
-TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "60"))
+DB_URL = os.environ.get("DB_URL", "mongodb+srv://skiliggeeXporter:skiliggeeXporter@cluster0.tdxtakc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DB_NAME = os.environ.get("DB_NAME", "Cluster0")
+
+TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "69"))
 START_MSG = os.environ.get("START_MESSAGE", "<blockquote><b>Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link. 💾</b></blockquote>")
-OWNER_TAG = os.environ.get("OWNER_TAG", "stupidBoi")
-TIME = int(os.environ.get("TIME", "60"))
+OWNER_TAG = os.environ.get("OWNER_TAG", "StupidBoi69")
+TIME = int(os.environ.get("TIME", "3600"))
 
     
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', "86400"))
