@@ -216,10 +216,12 @@ Bot Username: @{client.username}
 
 New Link: {newLink}
 
-Shorten Link: {link}
-</b>""", 
-    parse_mode=ParseMode.HTML
-)
+Shortened Link: {link}
+</b>""",
+            parse_mode=ParseMode.HTML
+        )
+    except Exception as e:
+        print(f"Failed to send message: {e}"
                 
                     if USE_PAYMENT:
                         btn = [
@@ -280,11 +282,13 @@ Bot Username: @{client.username}
 
 Verification Link: {verification_link}
 
-Shorten Link: {link}
-</b>""", 
-    parse_mode=ParseMode.HTML
-            )
-            
+Shortened Link: {link}
+</b>""",
+            parse_mode=ParseMode.HTML
+        )
+    except Exception as e:
+        print(f"Failed to send message: {e}"  
+              
             if USE_PAYMENT:
                 btn = [
                 [InlineKeyboardButton("↪️ Get token for free access ↩️", url=link)],
