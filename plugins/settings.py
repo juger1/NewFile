@@ -195,13 +195,15 @@ Enter 5 for Six months</b>""",
             4: "Three months",
             5: "Six months"
         }[timeforprem]
-
+        
         try:
-            await update_verify_status(user_id, is_verified=True, verified_time=time.time() + (86400 * timeforprem))
+            await increasepremtime(user_id, timeforprem)  # Function to increase premium time
             await message.reply("Premium added! 🤫")
             await client.send_message(
                 chat_id=user_id,
                 text=f"<b>👑 Update for you\n\nYou are added as a premium member for ({timestring}) 😃\n\nFeedback: @StupidBoi69</b>",
             )
-        except Exception:
-            await message.reply("Some error occurred.\nCheck logs.. 😖")
+        except Exception as e:
+            print(e)
+            await message.reply("Some error occurred.\nCheck logs.. 😖\nIf you got a premium added message, then it's ok.")
+       
