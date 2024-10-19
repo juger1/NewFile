@@ -5,7 +5,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from bot import Bot
 from config import ADMINS, USE_PAYMENT
 from database.database import add_admin, del_admin, full_adminbase, present_admin
-from helpers_func import *
+from helper_func import *
 
 # Settings command handler
 @Bot.on_message(filters.command('settings') & filters.private & filters.user(ADMINS))
