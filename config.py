@@ -30,7 +30,7 @@ REQUEST2 = os.environ.get("REQUEST2", "https://t.me/+R6xc_7a0yX4xYzVl")
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7227898838:AAE09d00tLDqS2_QbykRIz8LRi8NSwtL3F4") 
 APP_ID = int(os.environ.get("APP_ID", "25695562"))
 API_HASH = os.environ.get("API_HASH", "0b691c3e86603a7e34aae0b5927d725a")
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1001902545745 -1001732352061 -1001929558021")).split()
+CHANNEL_ID = [int(channel_id) for channel_id in os.environ.get("CHANNEL_ID", "-1001902545745 -1001732352061 -1001929558021").split()]
 OWNER_ID = int(os.environ.get("OWNER_ID", "1895952308"))
 LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002117941809"))
 
