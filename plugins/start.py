@@ -45,6 +45,7 @@ async def start_command(client: Client, message: Message):
                 if verify_status["link"] == "":
                     reply_markup = None
                 await message.reply(f"<blockquote><b>Your token verification was successful\n\nNow you can access all files for 24-hrs...</b></blockquote>", reply_markup=reply_markup, protect_content=False, quote=True)
+
     if len(message.text) > 7:
         for i in range(1):
             if USE_SHORTLINK and (not U_S_E_P):
@@ -69,26 +70,30 @@ async def start_command(client: Client, message: Message):
                         pass
                 await inc_count(base64_string)
                 if len(argument) == 5:
-                    try:
-                        start = int(int(argument[3]) / abs(client.db_channel.id))
-                        end = int(int(argument[4]) / abs(client.db_channel.id))
-                    except:
-                        return
-                    if start <= end:
-                        ids = range(start, end+1)
-                    else:
-                        ids = []
-                        i = start
-                        while True:
-                            ids.append(i)
-                            i -= 1
-                            if i < end:
-                                break
+                    # Process each channel ID
+                    ids = []
+                    for channel_id in CHANNEL_ID:
+                        try:
+                            start = int(int(argument[3]) / abs(int(channel_id)))
+                            end = int(int(argument[4]) / abs(int(channel_id)))
+                        except:
+                            return
+                        if start <= end:
+                            ids.extend(range(start, end + 1))
+                        else:
+                            i = start
+                            while True:
+                                ids.append(i)
+                                i -= 1
+                                if i < end:
+                                    break
                 elif len(argument) == 4:
-                    try:
-                        ids = [int(int(argument[3]) / abs(client.db_channel.id))]
-                    except:
-                        return
+                    ids = []
+                    for channel_id in CHANNEL_ID:
+                        try:
+                            ids.append(int(int(argument[3]) / abs(int(channel_id))))
+                        except:
+                            return
                 temp_msg = await message.reply("Please wait... 🫷")
                 try:
                     messages = await get_messages(client, ids)
@@ -99,17 +104,17 @@ async def start_command(client: Client, message: Message):
                 snt_msgs = []
                 for msg in messages:
                     if bool(CUSTOM_CAPTION) & bool(msg.document):
-                        caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html,    filename=msg.document.file_name)
+                        caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
                     else:   
                         caption = "" if not msg.caption else msg.caption.html   
                     reply_markup = None 
                     try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                         await asyncio.sleep(0.5)    
                         snt_msgs.append(snt_msg)    
                     except FloodWait as e:  
                         await asyncio.sleep(e.x)    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                         snt_msgs.append(snt_msg)    
                     except: 
                         pass
@@ -130,26 +135,30 @@ async def start_command(client: Client, message: Message):
 
             if (not U_S_E_P) or (id in ADMINS) or (verify_status['is_verified']):
                 if len(argument) == 3:
-                    try:
-                        start = int(int(argument[1]) / abs(client.db_channel.id))
-                        end = int(int(argument[2]) / abs(client.db_channel.id))
-                    except:
-                        return
-                    if start <= end:
-                        ids = range(start, end+1)
-                    else:
-                        ids = []
-                        i = start
-                        while True:
-                            ids.append(i)
-                            i -= 1
-                            if i < end:
-                                break
+                    # Process each channel ID for range
+                    ids = []
+                    for channel_id in CHANNEL_ID:
+                        try:
+                            start = int(int(argument[1]) / abs(int(channel_id)))
+                            end = int(int(argument[2]) / abs(int(channel_id)))
+                        except:
+                            return
+                        if start <= end:
+                            ids.extend(range(start, end + 1))
+                        else:
+                            i = start
+                            while True:
+                                ids.append(i)
+                                i -= 1
+                                if i < end:
+                                    break
                 elif len(argument) == 2:
-                    try:
-                        ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-                    except:
-                        return
+                    ids = []
+                    for channel_id in CHANNEL_ID:
+                        try:
+                            ids.append(int(int(argument[1]) / abs(int(channel_id))))
+                        except:
+                            return
                 temp_msg = await message.reply("Please wait... 🫷")
                 try:
                     messages = await get_messages(client, ids)
@@ -165,12 +174,12 @@ async def start_command(client: Client, message: Message):
                         caption = "" if not msg.caption else msg.caption.html   
                     reply_markup = None 
                     try:    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                         await asyncio.sleep(0.5)    
                         snt_msgs.append(snt_msg)    
                     except FloodWait as e:  
                         await asyncio.sleep(e.x)    
-                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode= ParseMode.HTML,  reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                        snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                         snt_msgs.append(snt_msg)    
                     except: 
                         pass    
@@ -188,17 +197,18 @@ async def start_command(client: Client, message: Message):
                     await notification_msg.edit("<blockquote><b>Your file has been successfully deleted! 😼</b></blockquote>")  
                     return
             except:
-                    newbase64_string = await encode(f"sav-ory-{_string}")
-                    if not await present_hash(newbase64_string):
-                        try:
-                            await gen_new_count(newbase64_string)
-                        except:
-                            pass
-                    clicks = await get_clicks(newbase64_string)
-                    newLink = f"https://t.me/{client.username}?start={newbase64_string}"
-                    link = await get_shortlink(newLink)            
-                    
-                    await client.send_message(chat_id=LOG_CHANNEL, text=f"""<b>
+                newbase64_string = await encode(f"sav-ory-{_string}")
+                if not await present_hash(newbase64_string):
+                    try:
+                        await gen_new_count(newbase64_string)
+                    except:
+                        pass
+                clicks = await get_clicks(newbase64_string)
+                newLink = f"https://t.me/{client.username}?start={newbase64_string}"
+                link = await get_shortlink(newLink)            
+                
+                for channel_id in CHANNEL_ID:
+                    await client.send_message(chat_id=channel_id, text=f"""<b>
 #NEW_LINK: [{message.from_user.first_name}](tg://user?id={message.from_user.id})</b>
 
 @{message.from_user.mention} • {message.from_user.id}
@@ -208,8 +218,9 @@ New Link: {newLink}
 
 Shorten Link: {link}
 </b>""", 
-    parse_mode="HTML"
-)                
+    parse_mode=ParseModeHTML
+)
+                
                     if USE_PAYMENT:
                         btn = [
                         [InlineKeyboardButton("↪️ Get Download Link ↩️", url=link)],
